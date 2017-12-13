@@ -1,0 +1,15 @@
+﻿@model TestMVC.Models.Item
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div class="jumbotron">
+
+        <form class="form-horizontal" action="/Home/Compare" method="post">
+            <center><h1 style="color:blue">Folder Comparer</h1></center>
+            <center><p class="lead" style="color:red ">Input both folder paths to compare</p></center>
+            <center><p><input size="22" id="txtFolder1" name="folder1" type="text" /> &nbsp;&nbsp; <input name ="button5" class="btn btn-danger btn-lg" type="submit"> </input> &nbsp;&nbsp; <input name="folder2" id="txtFolder2" type="text" /></p></center>
+        </form>
+</div>

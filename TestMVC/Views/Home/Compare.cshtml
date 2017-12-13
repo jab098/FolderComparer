@@ -1,0 +1,318 @@
+﻿@model TestMVC.Models.Item
+
+@{
+    ViewBag.Title = "Compare";
+    ViewBag.Outcome = string.Empty;
+    ViewBag.False = "Both directories are not equal!";
+    int notTrue = 0, matchingFiles = 0, differentContent = 0, uniqueFiles = 0, sameContent = 0, unique2Files = 0, count1 = 0, count2 = 0, isDirectory1Valid = 0, isDirectory2Valid = 0, totalFiles1 = 0, totalFiles2 = 0;
+}
+@foreach (var preDetail in Model.Folder1.FileDetails)
+{
+    if (preDetail.Name == "DirectoryNotFound")
+    {
+        isDirectory1Valid++;
+    }
+    if (preDetail.ExistsBothFolder && preDetail.IsContentSame)
+    {
+        matchingFiles++;
+    }
+    if (preDetail.HasSameContentWithAnotherFileName == false & preDetail.ExistsBothFolder == false & preDetail.IsContentSame == false & preDetail.IsDateModifiedSame == false)
+    {
+        uniqueFiles++;
+    }
+    if (preDetail.ExistsBothFolder && preDetail.IsContentSame == false)
+    {
+        sameContent++;
+    }
+    if (preDetail.HasSameContentWithAnotherFileName && preDetail.ExistsBothFolder == false)
+    {
+        differentContent++;
+    }
+}
+@foreach (var pre2Detail in Model.Folder2.FileDetails)
+{
+    if (pre2Detail.Name == "DirectoryNotFound")
+    {
+        isDirectory2Valid++;
+    }
+    if (pre2Detail.ExistsBothFolder && pre2Detail.IsContentSame)
+    {
+        matchingFiles++;
+    }
+    if (pre2Detail.HasSameContentWithAnotherFileName == false & pre2Detail.ExistsBothFolder == false & pre2Detail.IsContentSame == false & pre2Detail.IsDateModifiedSame == false)
+    {
+        unique2Files++;
+    }
+    if (pre2Detail.ExistsBothFolder && pre2Detail.IsContentSame == false)
+    {
+        sameContent++;
+    }
+    if (pre2Detail.HasSameContentWithAnotherFileName && pre2Detail.ExistsBothFolder == false)
+    {
+        differentContent++;
+    }
+}
+@if (isDirectory1Valid > 0 || isDirectory2Valid > 0)
+{
+    <div class="jumbotron" id="Top">
+        <center><a name="Top"></a><h1 style="color:blue">Results</h1></center>
+        <center><p class="lead" style="color:red ">Directory is invalid!</p></center>
+        <center><p><a class="btn btn-danger btn-lg" href="/Home/Index">Reset</a></p></center>
+    </div>
+}
+else
+{
+    <div class="jumbotron">
+        <center><a name="Top"></a><h1 style="color:blue">Results</h1></center>
+        @foreach (var file1Detail in Model.Folder1.FileDetails)
+        {
+            if (!file1Detail.HasSameContentWithAnotherFileName && file1Detail.ExistsBothFolder && file1Detail.IsContentSame && file1Detail.IsDateModifiedSame)
+            {
+                foreach (var file2Details in Model.Folder2.FileDetails)
+                {
+                    if (!file2Details.HasSameContentWithAnotherFileName && file2Details.ExistsBothFolder && file2Details.IsContentSame && file2Details.IsDateModifiedSame)
+                    {
+                        //ViewBag.Outcome = "Both Directories are equal!";
+                    }
+                    else
+                    {
+                        notTrue++;
+                    }
+                }
+            }
+            else
+            {
+                notTrue++;
+            }
+            if (notTrue > 0)
+            {
+                ViewBag.Outcome = ViewBag.False;
+            }
+            else
+            {
+                ViewBag.Outcome = "Both directories are equal!";
+            }
+        }
+        @if (ViewBag.Outcome.Equals("Both directories are equal!"))
+        {
+            <center><p class="lead" style="color:green ">@Html.Raw(ViewBag.Outcome)</p></center>
+        }
+        else
+        {
+            <center><p class="lead" style="color:red ">@Html.Raw(ViewBag.Outcome)</p></center>
+        }
+        <center><p><a class="btn btn-danger btn-lg" href="/Home/Index">Reset</a></p></center>
+
+        <table class="table">
+
+            <tr>
+                <td>
+                    <table class="table">
+
+                        <tr>
+                            @foreach (var fileDetail in Model.Folder1.FileDetails)
+                            {
+                                if (!fileDetail.ExistsBothFolder && !fileDetail.IsContentSame && !fileDetail.IsDateModifiedSame)
+                                {
+                                    count1++;
+                                }
+                                totalFiles1++;
+                            }
+                            @if (count1 > 0)
+                            {
+                                <td style="background-color: transparent"></td>
+                            }
+                            <td style="background-color: ghostwhite" width="700 px">
+                                <div style="height: 60px; overflow:auto; font-size: 21px; font-weight:bold">
+                                    <img alt="ListView" src="@Url.Content(" https://s1.postimg.org/51x40vnjj/folder.png")" style="width: 30px; height: 25px;" /> @Html.DisplayFor(modelItem => Model.Folder1.Name)
+                                </div>
+                            </td>
+                        </tr>
+                        @foreach (var fileDetail in Model.Folder1.FileDetails.OrderBy(fd => fd.BackgroundColour() == "lightgreen" ? 0 : (fd.BackgroundColour() == "lightskyblue" ? 1 : (fd.BackgroundColour() == "orange" ? 2 : 3))))
+                        {
+                            <tr>
+                                @if (count1 > 0)
+                                {
+                                    <td style="background-color: ghostwhite">
+                                        @if (!fileDetail.HasSameContentWithAnotherFileName && !fileDetail.ExistsBothFolder && !fileDetail.IsContentSame && !fileDetail.IsDateModifiedSame)
+                                        {
+                                            <img alt="ListView" src="@Url.Content(" https://s8.postimg.org/bmz6bh05x/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+                                        else if (fileDetail.ExistsBothFolder && !fileDetail.IsContentSame)
+                                        {
+                                            <img alt="ListView" src="@Url.Content(" https://s16.postimg.org/wh9vyj4o5/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+                                        else if (fileDetail.HasSameContentWithAnotherFileName && !fileDetail.ExistsBothFolder)
+                                        {
+
+                                            <img alt="ListView" src="@Url.Content(" https://s22.postimg.org/q09phw3gh/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+
+                                    </td>
+                                }
+                                <td style="background-color: @fileDetail.BackgroundColour(); font-size: 18px">
+                                    @if (fileDetail.IsFolder == true)
+                                    {
+                                        <img alt="ListView" src="@Url.Content(" https://s27.postimg.org/3ywaao4sz/new_Folder1.png")" style="width: 20px; height: 25px;" />
+                                    }
+                                    else
+                                    {
+                                        <img alt="ListView" src="@Url.Content(" http://www.clker.com/cliparts/N/K/u/R/m/8/file-icon-md.png")" style="width: 20px; height: 25px;" />
+                                    }
+                                    <a href="#Section1">@Html.DisplayFor(modelItem => fileDetail.Name)</a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+
+                <td>
+                    <table class="table">
+
+                        <tr>
+                            @foreach (var fileDetail in Model.Folder2.FileDetails)
+                            {
+                                if (!fileDetail.ExistsBothFolder && !fileDetail.IsContentSame && !fileDetail.IsDateModifiedSame)
+                                {
+                                    count2++;
+                                }
+                                totalFiles2++;
+                            }
+                            @if (count2 > 0)
+                            {
+                                <td style="background-color: transparent"></td>;
+
+                            }
+                            <td style="background-color: ghostwhite" width="700 px">
+                                <div style="height: 60px; overflow:auto; font-size: 21px; font-weight:bold">
+                                    <img alt="ListView" src="@Url.Content(" https://s1.postimg.org/51x40vnjj/folder.png")" style="width: 30px; height: 25px;" /> @Html.DisplayFor(modelItem => Model.Folder2.Name)
+                                </div>
+                            </td>
+                        </tr>
+
+                        @foreach (var fileDetail in Model.Folder2.FileDetails.OrderBy(fd => fd.BackgroundColour() == "lightgreen" ? 0 : (fd.BackgroundColour() == "lightskyblue" ? 1 : (fd.BackgroundColour() == "orange" ? 2 : 3))))
+                        {
+                            <tr>
+                                @if (count2 > 0)
+                                {
+                                    <td style="background-color: ghostwhite">
+
+                                        @if (fileDetail.HasSameContentWithAnotherFileName == false & fileDetail.ExistsBothFolder == false & fileDetail.IsContentSame == false & fileDetail.IsDateModifiedSame == false)
+                                        {
+                                            <img alt="ListView" src="@Url.Content(" https://s8.postimg.org/bmz6bh05x/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+                                        else if (fileDetail.ExistsBothFolder == true & fileDetail.IsContentSame == false)
+                                        {
+                                            <img alt="ListView" src="@Url.Content(" https://s16.postimg.org/wh9vyj4o5/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+                                        else if (fileDetail.HasSameContentWithAnotherFileName == true & fileDetail.ExistsBothFolder == false)
+                                        {
+
+                                            <img alt="ListView" src="@Url.Content(" https://s22.postimg.org/q09phw3gh/image.png")" style="width: 30px; height: 30px;" />
+                                        }
+
+                                    </td>
+                                }
+                                <td style="background-color: @fileDetail.BackgroundColour(); font-size: 18px">
+                                    @if (fileDetail.IsFolder == true)
+                                    {
+                                        <img alt="ListView" src="@Url.Content(" https://s27.postimg.org/3ywaao4sz/new_Folder1.png")" style="width: 20px; height: 25px;" />
+                                    }
+                                    else
+                                    {
+                                        <img alt="ListView" src="@Url.Content(" http://www.clker.com/cliparts/N/K/u/R/m/8/file-icon-md.png")" style="width: 20px; height: 25px;" />
+                                    }
+                                    <a href="#Section1">@Html.DisplayFor(modelItem => fileDetail.Name)</a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </td>
+
+            </tr>
+        </table>
+        <style>
+            #folderCount {
+                /*width: 100%;*/
+                padding: 5px 5px;
+                /*margin: 8px 0;*/
+                box-sizing: border-box;
+                /*border: none;*/
+                background-color: ghostwhite;
+            }
+        </style>
+        @if (totalFiles1 > 0)
+        {
+            <p id="folderCount"; class="lead">&nbsp;@totalFiles1 total items in folder 1! <span style="float:right">@totalFiles2 total items in folder 2!</span> </p>
+        }
+        @*<br />*@
+        @if (matchingFiles > 0)
+        {
+            <p id="matchFiles" class="lead" style="font-size: 18px; color: green">&nbsp;@Html.Raw(matchingFiles) file(s) that match in both folders!</p>
+        }
+        @if (uniqueFiles > 0)
+        {
+            if (uniqueFiles == 1)
+            {
+                <p class="lead" style="font-size: 18px; color: red">&nbsp;@Html.Raw(uniqueFiles) file that is unique in folder 1!</p>
+            }
+            else
+            {
+                <p class="lead" style="font-size: 18px; color: red">&nbsp;@Html.Raw(uniqueFiles) file(s) that are unique in folder 1!</p>
+            }
+        }
+        @if (unique2Files > 0)
+        {
+            if (unique2Files == 1)
+            {
+                <p class="lead" style="font-size: 18px; color: red">&nbsp;@Html.Raw(unique2Files) file that is unique in folder 2!</p>
+            }
+            else
+            {
+                <p class="lead" style="font-size: 18px; color: red">&nbsp;@Html.Raw(unique2Files) file(s) that are unique in folder 2!</p>
+            }
+        }
+        @if (differentContent > 0)
+        {
+            <p class="lead" style="font-size: 18px; color: dodgerblue">&nbsp;@Html.Raw(differentContent) file(s) that match in both folders but have different contents inside them!</p>
+        }
+        @if (sameContent > 0)
+        {
+            <p class="lead" style="font-size: 18px; color: darkorange">&nbsp;@Html.Raw(sameContent) file(s) that have the same content inside them but have different names!</p>
+        }
+    </div>
+    <h2>Legend</h2>
+    //&nbsp;
+    if (matchingFiles > 0)
+    {
+        <a name="Section1"></a><p class="lead" style="border: 1px solid lightgreen;">
+            <br />&nbsp;This file exists in both directories!<br /> <br />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s12.postimg.org/pt4egzh7x/green.png")" style="width: 30px; height: 30px;" /> = Matching file <br /> &nbsp;
+        </p>
+    }
+    if ((uniqueFiles + unique2Files) > 0)
+    {
+        <p class="lead" style="border: 1px solid lightcoral;">
+            <br />&nbsp;This file is does not exist in the other directory! <br /> <br />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s4.postimg.org/jfzea921p/red.png")" style="width: 30px; height: 30px;" />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s8.postimg.org/bmz6bh05x/image.png")" style="width: 30px; height: 30px;" /> = Unique File <br /> &nbsp;
+        </p>
+    }
+    if (sameContent > 0)
+    {
+        <p class="lead" style="border: 1px solid orange;">
+            <br />&nbsp;The content in this file matches with another but has a different file name! <br /> <br />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s8.postimg.org/sns6eesf9/orange.png")" style="width: 30px; height: 30px;" />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s22.postimg.org/q09phw3gh/image.png")" style="width: 30px; height: 30px;" /> = Different name with same content <br /> &nbsp;
+        </p>
+    }
+    if (differentContent > 0)
+    {
+        <p class="lead" style="border: 1px solid lightskyblue;">
+            <br />&nbsp;The name of this file matches with another but has different contents inside! <br /> <br />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s30.postimg.org/4rir8tgb5/blue.png")" style="width: 30px; height: 30px;" />
+            &nbsp;<img alt="ListView" src="@Url.Content(" https://s16.postimg.org/wh9vyj4o5/image.png")" style="width: 30px; height: 30px;" /> = Same name with different content <br /> &nbsp;
+        </p>
+    }
+    <p id="top2"><a class="btn btn-danger btn-lg" href="#top">Back to top</a></p>
+}
